@@ -17,6 +17,7 @@ import SuggestionsScreen from './src/SuggestionsScreen';
 import ValorationsScreen from './src/ValorationsScreen';
 import { createDrawerNavigator, createAppContainer } from 'react-navigation';
 import Sidebar from './src/Sidebar'
+import React from 'react';
 
 const drawer = createDrawerNavigator(
     {
@@ -39,7 +40,7 @@ const drawer = createDrawerNavigator(
         Valorations: { screen: ValorationsScreen }
     }, 
     {
-        initialRouteName: 'Details',
+        initialRouteName: 'Home',
         contentComponent: Sidebar,
         drawerWidth: 300
     }

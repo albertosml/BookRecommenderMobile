@@ -13,6 +13,7 @@ export default class DetailsScreen extends React.Component {
       <View style={{flex: 1}}>
         <Menu navigation={this.props.navigation} />
         <ScrollView style={{ marginTop: 6}}>
+        <Text style={{ textAlign: 'center', fontSize: 30, margin: 10 }}>Detalles</Text>
           <View style={{flex: 1, flexDirection: 'row', marginLeft: 20, marginRight: 20}}>
             <View style={{ flex: 0.7 }}>
               <Text style={{ fontSize: 18, marginBottom: 8}}>

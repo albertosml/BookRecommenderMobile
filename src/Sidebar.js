@@ -1,24 +1,36 @@
 import React, { Component } from 'react';
-import { ScrollView, Image, Text } from 'react-native';
-import { Drawer, Avatar, COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
+import { ScrollView, Image, Text, View, AsyncStorage } from 'react-native';
+import { Drawer, Avatar, COLOR } from 'react-native-material-ui';
 import { Constants } from 'expo';
 
-const uiTheme = {
-    drawerHeaderListItem: {
-      primaryText: { color: 'white' },
-      secondaryText: { color: 'white' },
-      tertiaryText: { color: COLOR.blue500 }
-    }
-  };
-
 export default class Sidebar extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            username: 'admin'
+          username: '', 
+          name: ''
         };
+    
+        this.closeSession = this.closeSession.bind(this);
+    }   
+
+    async shouldComponentUpdate() {
+        var value = await AsyncStorage.getItem('username');
+        if(value == null) value = '';
+        
+        if(value != this.state.username) {
+            this.setState({ username: value });
+            return true;
+        }
+        else return false;
     }
 
+    closeSession() {
+        AsyncStorage.setItem('username', '');
+        this.setState({ username: '' });
+        this.props.navigation.navigate('Home');
+    }
+    
     render() {
         return (
             <ScrollView style={{ marginTop: Constants.statusBarHeight }}>
@@ -26,20 +38,21 @@ export default class Sidebar extends Component {
                     <Drawer.Header
                         image={<Image source={require('./images/libros.jpg')} />}
                     >
-                        <ThemeContext.Provider value={getTheme(uiTheme)}>
-                            <Drawer.Header.Account
-                                avatar={<Avatar icon="person" style={{ container: { backgroundColor: 'green', marginTop:24 }}}  />}
-                                footer={{
-                                    dense: true,
-                                    centerElement: {
-                                        primaryText: 'albertosml',
-                                        secondaryText: 'Alberto Silvestre Montes Linares',
-                                        tertiaryText: 'Abandonar Sesión'
-                                    }
-                                }}
-                            />
-                        </ThemeContext.Provider>
-                            
+                        <Drawer.Header.Account
+                            avatar={<Avatar icon="person" style={{ container: { backgroundColor: 'green' }}} />}
+                            footer={{
+                                dense: true,
+                                centerElement:
+                                    <View style={{ marginBottom: 25}}>
+                                        <Text style={{ color: 'white' }}>{this.state.username.length > 0 ? this.state.username : 'No conectado'}</Text>
+                                        <Text style={{ color: 'white' }}>{this.state.name.length > 0 ? this.state.name : ''}</Text>
+                                        {(() => {
+                                            if(this.state.username.length > 0 && this.state.username != undefined) return <Text style={{ color: COLOR.blue500 }} onPress={this.closeSession}>Abandonar Sesión</Text>;
+                                            else return <Text style={{ color: COLOR.blue500 }} onPress={() => this.props.navigation.navigate('StartSession')}>Iniciar Sesión</Text>;
+                                        })()}
+                                    </View>
+                            }}
+                        />                    
                     </Drawer.Header>
                     {(() => {
                         if(this.state.username == "admin") {

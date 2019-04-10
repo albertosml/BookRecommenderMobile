@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, Text, View } from "react-native";
+import {ScrollView, Text, View, AsyncStorage } from "react-native";
 import {Card, Snackbar} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
@@ -10,10 +10,32 @@ export default class ReadedBooksScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      libros: [0,1,2,3,4,5,6,7,8],
+      libros: [],
       itemsPerPage: 4,
-      snack_visible: false
+      snack_visible: false,
+      message: '',
+      username: ''
     };
+  }
+
+  async componentWillMount() {
+    var username = await AsyncStorage.getItem('username');
+    if(username != undefined && username.length > 0) this.setState({ username: username });
+    else this.props.navigation.navigate('Home');
+
+    fetch('https://book-recommender0.herokuapp.com/readedbooks',{
+      method: 'POST',
+      body: JSON.stringify({ username: this.state.username }),
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        this.setState({ libros: data.array });
+      })
+      .catch(err => console.log(err));
   }
 
   render() {
@@ -39,12 +61,15 @@ export default class ReadedBooksScreen extends React.Component {
                     return (
                       <ScrollView key={i}>
                         {
-                          this.state.libros.slice(i,i+this.state.itemsPerPage).map((n) => {
+                          this.state.libros.slice(i,i+this.state.itemsPerPage).map((libro) => {
                             return (
-                              <Card key={n} style={{ container: { backgroundColor: 'orange', marginHorizontal: 34, marginVertical: 15}}}>
+                              <Card key={libro.isbn} style={{ container: { backgroundColor: 'orange', marginHorizontal: 34, marginVertical: 15}}}>
                                 <View style={{ flexDirection: 'row', padding:8 }}>
-                                  <Text style={{ flex: 0.9 }}>Las lágrimas de Shiva - 8423675106</Text>
-                                  <Icon name="plus" style={{ color: 'blue', flex: 0.1 }} size={24} onPress={() => this.props.navigation.navigate('BookDetails')} onLongPress={() => this.setState({ snack_visible: true })} />
+                                  <Text style={{ flex: 0.9 }}>{libro.title} - {libro.isbn}</Text>
+                                  {(() => {
+                                    if(libro.valorado) return <Icon name="plus" style={{ color: 'blue', flex: 0.1 }} size={24} onPress={() => this.props.navigation.navigate('BookDetails', { isbn: libro.isbn })} onLongPress={() => this.setState({ snack_visible: true, message: "Más detalles del libro" })} />
+                                    else return <Icon name="book" style={{ color: 'blue', flex: 0.1 }} size={24} onPress={() => this.props.navigation.navigate('BookDetails', { isbn: libro.isbn })} onLongPress={() => this.setState({ snack_visible: true, message: "Valorar libro" })} />
+                                  })()}
                                 </View>
                               </Card>
                             )
@@ -58,7 +83,7 @@ export default class ReadedBooksScreen extends React.Component {
             )
           }
         })()}
-        <Snackbar visible={this.state.snack_visible} message="Presione el icono para ver más detalles del libro" timeout={2000} onRequestClose={() => this.setState({ snack_visible: false })} />
+        <Snackbar visible={this.state.snack_visible} message={this.state.message} timeout={2000} onRequestClose={() => this.setState({ snack_visible: false })} />
         <Footer navigation={this.props.navigation} />
       </View>
     );

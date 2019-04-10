@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, Text, View } from "react-native";
+import {ScrollView, Text, View, AsyncStorage } from "react-native";
 import {Card, Snackbar, Checkbox, Button} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
@@ -10,7 +10,7 @@ export default class RecommendedBooksScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      libros: [0,1,2,3,4,5],
+      libros: [],
       itemsPerPage: 5,
       snack_visible: false,
       message: '',
@@ -18,18 +18,81 @@ export default class RecommendedBooksScreen extends React.Component {
       check_valoraciones: false,
       check_comentarios: false
     };
+
+    this.removeRecommendedBook = this.removeRecommendedBook.bind(this);
+    this.requestRecommendation = this.requestRecommendation.bind(this);
+    this.addPendingBook = this.addPendingBook.bind(this);
   }
 
-  removeRecommendedBook() {
+  async componentWillMount() {
+    var username = await AsyncStorage.getItem('username');
+    if(username != undefined && username.length > 0) this.setState({ username: username });
+    else this.props.navigation.navigate('Home');
 
+    fetch('https://book-recommender0.herokuapp.com/recomendedbooks',{
+      method: 'POST',
+      body: JSON.stringify({ username: this.state.username }),
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        this.setState({ libros: data.array });
+      })
+      .catch(err => console.log(err));
   }
 
-  addPendingBook() {
+  removeRecommendedBook(isbn) {
+    fetch('https://book-recommender0.herokuapp.com/removerecomendedbook',{
+        method: 'POST',
+        body: JSON.stringify({ isbn: isbn, username: this.state.username }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+          this.setState({ libros: data.array });
+          this.setState({ message: 'Libro eliminado de la lista de recomendados', snack_visible: true });
+        })
+        .catch(err => console.log(err));
+  }
 
+  addPendingBook(isbn) {
+    fetch('https://book-recommender0.herokuapp.com/removerecomendedbook',{
+        method: 'POST',
+        body: JSON.stringify({ isbn: isbn, username: this.state.username }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+            this.setState({ libros: data.array });
+
+            fetch('https://book-recommender0.herokuapp.com/newpendingbook',{
+                method: 'POST',
+                body: JSON.stringify({ isbn: isbn, username: this.state.username }),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    this.setState({ message: 'Libro añadido como pendiente', snack_visible: true });
+                })
+                .catch(err => console.log(err));
+        })
+        .catch(err => console.log(err));  
   }
 
   requestRecommendation() {
-
+    this.setState({ message: 'Recomendación solicitada', snack_visible: true });
   }
 
   render() {
@@ -55,14 +118,14 @@ export default class RecommendedBooksScreen extends React.Component {
                     return (
                       <ScrollView key={i}>
                         {
-                          this.state.libros.slice(i,i+this.state.itemsPerPage).map((n) => {
+                          this.state.libros.slice(i,i+this.state.itemsPerPage).map((libro) => {
                             return (
-                              <Card key={n} style={{ container: { backgroundColor: 'orange', marginHorizontal: 34, marginVertical: 15}}}>
+                              <Card key={libro.isbn} style={{ container: { backgroundColor: 'orange', marginHorizontal: 34, marginVertical: 15}}}>
                                 <View style={{ flexDirection: 'row', padding:8 }}>
-                                  <Text style={{ flex: 0.7 }}>Las lágrimas de Shiva - 8423675106</Text>
-                                  <Icon name="search" style={{ color: 'blue', flex: 0.1 }} size={24} onPress={() => this.props.navigation.navigate('BookDetails')} onLongPress={() => this.setState({ snack_visible: true, message: 'Presione este botón para ver más detalles del libro' })} />
-                                  <Icon name="minus" style={{ color: 'blue', flex: 0.1 }} size={24} onPress={this.removeRecommendedBook} onLongPress={() => this.setState({ snack_visible: true, message: 'Presione este botón para quitar el libro de la lista de recomendados' })} />
-                                  <Icon name="plus" style={{ color: 'blue', flex: 0.1 }} size={24} onPress={this.addPendingBook} onLongPress={() => this.setState({ snack_visible: true, message: 'Presione este botón para añadir el libro a la lista de pendientes' })} />                                
+                                  <Text style={{ flex: 0.7 }}>{libro.title} - {libro.isbn}</Text>
+                                  <Icon name="search" style={{ color: 'blue', flex: 0.1 }} size={24} onPress={() => this.props.navigation.navigate('BookDetails', { isbn: libro.isbn })} onLongPress={() => this.setState({ snack_visible: true, message: 'Presione este botón para ver más detalles del libro' })} />
+                                  <Icon name="minus" style={{ color: 'blue', flex: 0.1 }} size={24} onPress={() => this.removeRecommendedBook(libro.isbn)} onLongPress={() => this.setState({ snack_visible: true, message: 'Presione este botón para quitar el libro de la lista de recomendados' })} />
+                                  <Icon name="plus" style={{ color: 'blue', flex: 0.1 }} size={24} onPress={() => this.addPendingBook(libro.isbn)} onLongPress={() => this.setState({ snack_visible: true, message: 'Presione este botón para añadir el libro a la lista de pendientes' })} />                                
                                 </View>
                               </Card>
                             )

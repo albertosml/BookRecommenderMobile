@@ -31,7 +31,7 @@ export default class AutoTags extends Component {
               style={[tagMargins, styles.tag]}
               onPress={() => this.props.handleDelete(i)}
             >
-              <Text>{t.name}</Text>
+              <Text>{t}</Text>
             </TouchableHighlight>
           );
         })}
@@ -79,7 +79,7 @@ export default class AutoTags extends Component {
     let results = [];
     query = query.toUpperCase();
     suggestions.forEach(i => {
-      if (i.name.toUpperCase().includes(query)) {
+      if (i.toUpperCase().includes(query)) {
         results.push(i);
       }
     });
@@ -128,7 +128,7 @@ export default class AutoTags extends Component {
               {this.props.renderSuggestion ? (
                 this.props.renderSuggestion(suggestion)
               ) : (
-                <Text>{suggestion.name}</Text>
+                <Text>{suggestion}</Text>
               )}
             </TouchableOpacity>
           )}

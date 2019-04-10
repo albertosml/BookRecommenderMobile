@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, Text, TextInput, View } from "react-native";
+import {ScrollView, Text, TextInput, View, AsyncStorage } from "react-native";
 import {Card, Snackbar, Button} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
@@ -16,9 +16,9 @@ export default class NewUserScreen extends React.Component {
       surname: '',
       email: '',
       password: '',
-      confirm_password: '',
-      genres: [],
-      suggestions: [{ name: 'Mickey Mouse'}, {name: 'Alber' }]
+      confirmpassword: '',
+      chips: [],
+      suggestions: []
     };
 
     this.addUser = this.addUser.bind(this);
@@ -27,19 +27,68 @@ export default class NewUserScreen extends React.Component {
     this.handleCreateTag = this.handleCreateTag.bind(this);
   }
 
+  async componentWillMount() {
+    var username = await AsyncStorage.getItem('username');
+    if(username != undefined && username.length > 0) this.props.navigation.navigate('Home');
+
+    fetch('https://book-recommender0.herokuapp.com/genrelist',{
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => { 
+            // Preparo array de géneros de sugerencia
+            let array = [];
+            data.map(d => {
+              array.push(d.name);
+            }); 
+
+            // Inserto array de géneros de sugerencia
+            this.setState({
+                suggestions: array
+            });
+        })   
+        .catch(err => console.log(err));
+  }
+
+  addUser() {
+    fetch('https://book-recommender0.herokuapp.com/users/signup',{
+        method: 'POST',
+        body: JSON.stringify(this.state),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+            if(data.msg.length == 0) {
+              this.setState({ snack_visible: true, message: 'Usuario registrado con éxito' });
+
+              // Espera a la redirección para que se vea el mensaje de arriba
+              setTimeout(() => this.props.navigation.navigate('Home'), 2000);
+            }
+            else this.setState({ message: data.msg, snack_visible: true });
+        })
+        .catch(err => console.log(err));
+  }
+
   handleDelete = index => {
     // Añado el género a la lista de sugerencias
-    this.setState({ suggestions: this.state.suggestions.concat([ this.state.genres[index] ]) });
+    this.setState({ suggestions: this.state.suggestions.concat([ this.state.chips[index] ]) });
     
     // Elimino el género de la lista de géneros
-    let genres = this.state.genres;
-    genres.splice(index, 1);
-    this.setState({ genres });
+    let chips = this.state.chips;
+    chips.splice(index, 1);
+    this.setState({ chips });
   }
     
   handleAddition = suggestion => {
     // Añado el género a la lista de géneros
-    this.setState({ genres: this.state.genres.concat([suggestion]) });
+    this.setState({ chips: this.state.chips.concat([suggestion]) });
 
     // Elimino el género de las sugerencias
     let index = this.state.suggestions.indexOf(suggestion);
@@ -49,11 +98,7 @@ export default class NewUserScreen extends React.Component {
   }
 
   handleCreateTag = elem => {
-    this.setState({ genres: this.state.genres.concat([ { name: elem } ]) });
-  }
-
-  addUser() {
-    this.setState({ message: 'Usuario registrado', snack_visible: true });
+    this.setState({ chips: this.state.chips.concat([ { name: elem } ]) });
   }
 
   render() {
@@ -91,12 +136,12 @@ export default class NewUserScreen extends React.Component {
 
             <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
               <Text style={{ color: '#585858'}}>Confirmar Contraseña</Text>
-              <TextInput secureTextEntry={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.confirm_password} onChangeText={(c) => this.setState({ confirm_password: c })} />
+              <TextInput secureTextEntry={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.confirmpassword} onChangeText={(c) => this.setState({ confirmpassword: c })} />
             </View> 
 
             <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
               <Text style={{ color: '#585858'}}>Géneros Favoritos</Text>
-              <AutoTags suggestions={this.state.suggestions} tagsSelected={this.state.genres} createTagOnSpace={true} onCustomTagCreated={this.handleCreateTag} handleAddition={this.handleAddition} handleDelete={this.handleDelete} placeholder="Añada un género literario que le guste" />
+              <AutoTags suggestions={this.state.suggestions} tagsSelected={this.state.chips} createTagOnSpace={true} onCustomTagCreated={this.handleCreateTag} handleAddition={this.handleAddition} handleDelete={this.handleDelete} placeholder="Añada un género literario que le guste" />
               <Text style={{ color: '#585858'}}>Busque su género en el autocompletado y selecciónelo con el ratón. Si no aparece, introdúzcalo manualmente y pulse la tecla de la coma (",").</Text>
             </View> 
 

@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, Text, View } from "react-native";
+import {ScrollView, Text, View, AsyncStorage } from "react-native";
 import {Card, Snackbar} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
@@ -10,14 +10,55 @@ export default class SuggestionsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sugerencias: [0,1,2,3,4,5,6,7,8],
+      sugerencias: [],
       itemsPerPage: 4,
-      snack_visible: false
+      snack_visible: false,
+      message: ''
     };
+
+    this.getSuggestions = this.getSuggestions.bind(this);
   }
 
-  removeSuggestion() {
+  getSuggestions() {
+    fetch('https://book-recommender0.herokuapp.com/suggestions',{
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+          this.setState({ sugerencias: data.array });
+      })
+      .catch(err => console.log(err));
+  }
 
+  async componentWillMount() {
+    var username = await AsyncStorage.getItem('username');
+    if(username != undefined && username == "admin") this.setState({ username: username });
+    else this.props.navigation.navigate('Home');
+
+    this.getSuggestions();
+  }
+
+  removeSuggestion(id) {
+    fetch('https://book-recommender0.herokuapp.com/removesuggestion',{
+        method: 'POST',
+        body: JSON.stringify({ id: id }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+            if(data.msg.length == 0) this.setState({ message: 'Sugerencia eliminada', snack_visible: true });
+            else this.setState({ message: data.msg, snack_visible: true });
+
+            this.getSuggestions();
+        })
+        .catch(err => console.log(err));
   }
 
   render() {
@@ -43,13 +84,13 @@ export default class SuggestionsScreen extends React.Component {
                     return (
                       <ScrollView key={i}>
                         {
-                          this.state.sugerencias.slice(i,i+this.state.itemsPerPage).map((n) => {
+                          this.state.sugerencias.slice(i,i+this.state.itemsPerPage).map((sugerencia) => {
                             return (
-                              <Card key={n} style={{ container: { backgroundColor: 'orange', marginHorizontal: 34, marginVertical: 15}}}>
-                                <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, marginTop: 5 }}>Administrador {n}</Text>
-                                <Text style={{ marginHorizontal: 15, marginVertical: 10 }}> SORPRESA!!! Miren sus libros recomendados, se le han hecho las primeras sugerencias a los usuarios ya registrados.</Text>
+                              <Card key={sugerencia.id} style={{ container: { backgroundColor: 'orange', marginHorizontal: 34, marginVertical: 15}}}>
+                                <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, marginTop: 5 }}>Administrador</Text>
+                                <Text style={{ marginHorizontal: 15, marginVertical: 10 }}>{sugerencia.description}</Text>
                                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', margin:3}}>
-                                  <Icon name="minus" style={{ color: 'blue' }} size={24} onPress={this.removeSuggestion} onLongPress={() => this.setState({ snack_visible: true })} />
+                                  <Icon name="minus" style={{ color: 'blue' }} size={24} onPress={() => this.removeSuggestion(sugerencia.id)} onLongPress={() => this.setState({ snack_visible: true, message: "Eliminar sugerencia" })} />
                                 </View>
                               </Card>
                             )
@@ -63,7 +104,7 @@ export default class SuggestionsScreen extends React.Component {
             )
           }
         })()}
-        <Snackbar visible={this.state.snack_visible} message="Eliminar sugerencia" timeout={2000} onRequestClose={() => this.setState({ snack_visible: false })} />
+        <Snackbar visible={this.state.snack_visible} message={this.state.message} timeout={2000} onRequestClose={() => this.setState({ snack_visible: false })} />
         <Footer navigation={this.props.navigation} />
       </View>
     );

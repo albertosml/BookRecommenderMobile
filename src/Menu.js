@@ -2,7 +2,6 @@ import React from "react";
 import {View, Text, FlatList} from "react-native";
 import {Toolbar} from 'react-native-material-ui';
 import { Constants } from 'expo';
-import { Sidebar } from './Sidebar';
 
 export default class Menu extends React.Component {
   constructor(props) {
@@ -12,7 +11,7 @@ export default class Menu extends React.Component {
       data: [],
       search_data: []
     };
-
+   
     this.renderHeader = this.renderHeader.bind(this);
   }
 
@@ -39,14 +38,24 @@ export default class Menu extends React.Component {
             autoFocus: true,
             placeholder: 'Buscar Libro...',
             onChangeText: (text) => {
-              if(text.length == 0) this.setState({ search_data: [] });
+              if(text.trim().length == 0) this.setState({ search_data: [] });
               else this.setState({ text: text, search_data: this.state.data.filter(key => key.toUpperCase() !== '' && key.toUpperCase().indexOf(text.toUpperCase()) !== -1) });
             },
             onSearchClosed: () => this.setState({ search_data: [] })
           }}
-          onLeftElementPress={() => this.props.navigation.openDrawer({},{ navigation: this.props.navigation, username: this.props.username })}
+          rightElement={['home']}
+          onRightElementPress={ () => this.props.navigation.navigate('Home')}
+          onLeftElementPress={() => this.props.navigation.openDrawer({ navigation: this.props.navigation })}
         />
     )
+  }
+
+  onSelectItem(isbn) {
+    if(this.props.onUpdate == undefined) this.props.navigation.navigate('BookDetails', { isbn: isbn });
+    else {
+      this.props.onUpdate(isbn);
+      this.setState({ search_data: [] });
+    }
   }
 
   render() {
@@ -65,7 +74,7 @@ export default class Menu extends React.Component {
           }
           }
           keyExtractor={item => item}  
-          renderItem={({item}) => (<Text style={{ padding:10, fontSize:18, height:44, backgroundColor: '#ecdddd' }}>{item}</Text>)}
+          renderItem={({item}) => (<Text onPress={() => this.onSelectItem(item.split(" - ")[1])} style={{ padding:10, fontSize:18, height:44, backgroundColor: '#ecdddd' }}>{item}</Text>)}
         />
       </View>
     );

@@ -7,12 +7,16 @@ export default class Sidebar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          username: '', 
-          name: ''
+          username: ''
         };
     
         this.closeSession = this.closeSession.bind(this);
     }   
+
+    async componentWillMount() {
+        var value = await AsyncStorage.getItem('username');
+        this.setState({ username: value == null ? '' : value });
+    }
 
     async shouldComponentUpdate() {
         var value = await AsyncStorage.getItem('username');
@@ -25,12 +29,12 @@ export default class Sidebar extends Component {
         else return false;
     }
 
-    closeSession() {
-        AsyncStorage.setItem('username', '');
+    async closeSession() {
+        await AsyncStorage.setItem('username', '');
         this.setState({ username: '' });
-        this.props.navigation.navigate('Home');
+        this.props.navigation.navigate('Home', { username: '' });
     }
-    
+
     render() {
         return (
             <ScrollView style={{ marginTop: Constants.statusBarHeight }}>
@@ -44,8 +48,7 @@ export default class Sidebar extends Component {
                                 dense: true,
                                 centerElement:
                                     <View style={{ marginBottom: 25}}>
-                                        <Text style={{ color: 'white' }}>{this.state.username.length > 0 ? this.state.username : 'No conectado'}</Text>
-                                        <Text style={{ color: 'white' }}>{this.state.name.length > 0 ? this.state.name : ''}</Text>
+                                        <Text style={{ color: 'white', marginBottom: 8 }}>{this.state.username.length > 0 ? this.state.username : 'No conectado'}</Text>
                                         {(() => {
                                             if(this.state.username.length > 0 && this.state.username != undefined) return <Text style={{ color: COLOR.blue500 }} onPress={this.closeSession}>Abandonar Sesión</Text>;
                                             else return <Text style={{ color: COLOR.blue500 }} onPress={() => this.props.navigation.navigate('StartSession')}>Iniciar Sesión</Text>;
@@ -58,15 +61,13 @@ export default class Sidebar extends Component {
                         if(this.state.username == "admin") {
                             return (
                                 <Drawer.Section
-                                    title="Opciones"
                                     divider
                                     items={[
-                                        { icon: 'home', value: 'Inicio', onPress: () => this.props.navigation.navigate('Home') },
                                         { icon: 'person', value: 'Perfil', onPress: () => this.props.navigation.navigate('Profile') },
                                         { icon: 'remove-red-eye', key:'suggestions' ,value: 'Ver Sugerencias', onPress: () => this.props.navigation.navigate('Suggestions') },
                                         { icon: 'remove-red-eye', key:'themes' ,value: 'Ver Libros', onPress: () => this.props.navigation.navigate('Books') },
                                         { icon: 'remove-red-eye', value: 'Ver Géneros', onPress: () => this.props.navigation.navigate('Genres') },
-                                        { icon: 'edit', value: 'Nueva Noticia', onPress: () => this.props.navigation.navigate('NewSuggestion') }
+                                        { icon: 'edit', value: 'Nueva Noticia', onPress: () => this.props.navigation.navigate('NewSuggestion', { sugerencia: false }) }
                                     ]}
                                 />
                             )
@@ -74,13 +75,11 @@ export default class Sidebar extends Component {
                         else if(this.state.username.length > 0) {
                             return (
                                 <Drawer.Section
-                                    title="Opciones"
                                     divider
                                     items={[
-                                        { icon: 'home', value: 'Inicio', onPress: () => this.props.navigation.navigate('Home') },
                                         { icon: 'person', value: 'Perfil', onPress: () => this.props.navigation.navigate('Profile') },
                                         { icon: 'book', value: 'Registrar Libro', onPress: () => this.props.navigation.navigate('NewBook') },
-                                        { icon: 'edit', value: 'Nueva Sugerencia', onPress: () => this.props.navigation.navigate('NewSuggestion') },
+                                        { icon: 'edit', value: 'Nueva Sugerencia', onPress: () => this.props.navigation.navigate('NewSuggestion', { sugerencia: true }) },
                                         { icon: 'remove-red-eye', key: 'themes', value: 'Temas Libres', onPress: () => this.props.navigation.navigate('FreeThemes') },
                                         { icon: 'remove-red-eye', value: 'Ver Libros Añadidos', onPress: () => this.props.navigation.navigate('Books') },
                                         { icon: 'book', value: 'Mis Valoraciones', key: 'valoraciones', onPress: () => this.props.navigation.navigate('Valorations') },
@@ -94,13 +93,11 @@ export default class Sidebar extends Component {
                         else {
                             return (
                                 <Drawer.Section
-                                    title="Opciones"
                                     divider
                                     items={[
-                                        { icon: 'home', value: 'Inicio', onPress: () => this.props.navigation.navigate('Home') },
                                         { icon: 'person', value: 'Registrar Usuario', onPress: () => this.props.navigation.navigate('NewUser') },
                                         { icon: 'book', value: 'Registrar Libro', onPress: () => this.props.navigation.navigate('NewBook') },
-                                        { icon: 'edit', value: 'Nueva Sugerencia', onPress: () => this.props.navigation.navigate('NewSuggestion') },
+                                        { icon: 'edit', value: 'Nueva Sugerencia', onPress: () => this.props.navigation.navigate('NewSuggestion', { sugerencia: true }) },
                                         { icon: 'remove-red-eye', key:'themes' ,value: 'Temas Libres', onPress: () => this.props.navigation.navigate('FreeThemes') },
                                         { icon: 'remove-red-eye', value: 'Ver Libros Añadidos', onPress: () => this.props.navigation.navigate('Books') }
                                     ]}

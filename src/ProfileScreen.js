@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, Text, TextInput, View } from "react-native";
+import {ScrollView, Text, TextInput, View, AsyncStorage } from "react-native";
 import {Card, Snackbar, Button} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
@@ -12,18 +12,18 @@ export default class ProfileScreen extends React.Component {
       snack_visible: false,
       message: '',
       username: '',
-      username_old: 'albertosml',
+      username_old: '',
       name: '',
-      name_old: 'Alberto Silvestre',
+      name_old: '',
       surname: '',
-      surname_old: 'Montes Linares',
+      surname_old: '',
       email: '',
-      email_old: 'alberto.silvestre28@gmail.com',
+      email_old: '',
       password: '',
-      confirm_password: '',
-      genres: [{ name: 'Perd' }],
-      genres_old: [{ name: 'Perd' }],
-      suggestions: [{ name: 'Mickey Mouse'}, {name: 'Alber' }]
+      confirmpassword: '',
+      chips: [],
+      chips_old: [],
+      suggestions: []
     };
 
     this.addUser = this.addUser.bind(this);
@@ -32,19 +32,101 @@ export default class ProfileScreen extends React.Component {
     this.handleCreateTag = this.handleCreateTag.bind(this);
   }
 
+  async componentWillMount() {
+    var username = await AsyncStorage.getItem('username');
+    if(username != undefined && username.length > 0) this.setState({ username_old: username });
+    else this.props.navigation.navigate('Home');
+
+    fetch('https://book-recommender0.herokuapp.com/genrelist',{
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => { 
+            // Preparo array de géneros de sugerencia
+            let array = [];
+            data.map(d => {
+                array.push(d.name);
+            }); 
+
+            // Inserto array de géneros de sugerencia
+            this.setState({
+                suggestions: array
+            });
+        })   
+        .catch(err => console.log(err));
+
+    fetch('https://book-recommender0.herokuapp.com/user/data',{
+        method: 'POST',
+        body: JSON.stringify({ username: this.state.username_old }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => { 
+            this.setState({
+                chips: data.generos,
+                name: '',
+                surname: '',
+                email: '',
+                chips_old: data.generos,
+                name_old: data.user.name,
+                surname_old: data.user.surname,
+                email_old: data.user.email,
+                username_old: data.user.username
+            });
+        })   
+        .catch(err => console.log(err));
+  }
+
+  addUser() {
+    fetch('https://book-recommender0.herokuapp.com/user/profile',{
+        method: 'POST',
+        body: JSON.stringify(this.state),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => { 
+            if(data.close != undefined) {
+              this.setState({ message: 'Para la próxima sesión se le habrá cambiado el nombre, por lo que se le ruega que cierre la sesión', snack_visible: true });
+            }
+
+            if(data.msg.length == 0) this.setState({ snack_visible: true, message: 'Usuario editado'}); 
+            else this.setState({ snack_visible: true, message: data.msg});
+
+            // Actualizo los cambios en el formulario
+            if(this.state.username.length >0) this.setState({ username: '', username_old: this.state.username_old });
+            if(this.state.name.length >0) this.setState({ name: '', name_old: this.state.name });
+            if(this.state.surname.length >0) this.setState({ surname: '', surname_old: this.state.surname });
+            if(this.state.email.length >0) this.setState({ email: '', email_old: this.state.email });
+
+            // Vacío los campos relacionados con la contraseña
+            this.setState({ password: '', confirmpassword: ''});
+        })   
+        .catch(err => console.log(err));
+  }
+
   handleDelete = index => {
     // Añado el género a la lista de sugerencias
-    this.setState({ suggestions: this.state.suggestions.concat([ this.state.genres[index] ]) });
+    this.setState({ suggestions: this.state.suggestions.concat([ this.state.chips[index] ]) });
     
     // Elimino el género de la lista de géneros
-    let genres = this.state.genres;
-    genres.splice(index, 1);
-    this.setState({ genres });
+    let chips = this.state.chips;
+    chips.splice(index, 1);
+    this.setState({ chips });
   }
     
   handleAddition = suggestion => {
     // Añado el género a la lista de géneros
-    this.setState({ genres: this.state.genres.concat([suggestion]) });
+    this.setState({ chips: this.state.chips.concat([suggestion]) });
 
     // Elimino el género de las sugerencias
     let index = this.state.suggestions.indexOf(suggestion);
@@ -54,12 +136,7 @@ export default class ProfileScreen extends React.Component {
   }
 
   handleCreateTag = elem => {
-    this.setState({ genres: this.state.genres.concat([ { name: elem } ]) });
-  }
-
-  addUser() {
-    console.log(this.state);
-    this.setState({ message: 'Usuario modificado', snack_visible: true });
+    this.setState({ chips: this.state.chips.concat([ elem ]) });
   }
 
   render() {
@@ -102,16 +179,16 @@ export default class ProfileScreen extends React.Component {
 
             <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
               <Text style={{ color: '#585858'}}>Confirmar Contraseña</Text>
-              <TextInput secureTextEntry={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.confirm_password} onChangeText={(c) => this.setState({ confirm_password: c })} />
+              <TextInput secureTextEntry={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.confirmpassword} onChangeText={(c) => this.setState({ confirmpassword: c })} />
             </View> 
 
             <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
               <Text style={{ color: '#585858'}}>Géneros Favoritos</Text>
-              <AutoTags suggestions={this.state.suggestions} tagsSelected={this.state.genres} createTagOnSpace={true} onCustomTagCreated={this.handleCreateTag} handleAddition={this.handleAddition} handleDelete={this.handleDelete} placeholder="Añada un género literario que le guste" />
+              <AutoTags suggestions={this.state.suggestions} tagsSelected={this.state.chips} createTagOnSpace={true} onCustomTagCreated={this.handleCreateTag} handleAddition={this.handleAddition} handleDelete={this.handleDelete} placeholder="Añada un género literario que le guste" />
               <Text style={{ color: '#585858'}}>Busque su género en el autocompletado y selecciónelo con el ratón. Si no aparece, introdúzcalo manualmente y pulse la tecla de la coma (",").</Text>
             </View> 
 
-            <Button primary raised text="Registrar" style={{ container: { margin: 20 }}} onPress={this.addUser} />
+            <Button primary raised text="Editar" style={{ container: { margin: 20 }}} onPress={this.addUser} />
           </Card>
         </ScrollView>
           

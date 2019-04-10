@@ -18,22 +18,9 @@ export default class StartSessionScreen extends React.Component {
     this.rememberPassword = this.rememberPassword.bind(this);
   }
 
-  componentWillMount() {
-    fetch('https://book-recommender0.herokuapp.com/verifysession',{
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(res => res.json())
-        .then(data => {
-            if(data.msg == 'SI') { 
-              this.forceUpdate();
-              this.props.navigation.navigate('Home');
-            }
-        })
-        .catch(err => console.log(err));
+  async componentWillMount() {
+    var value = await AsyncStorage.getItem('username');
+    if(value != null) this.props.navigate('Home');
   }
 
   startSession() {
@@ -50,9 +37,9 @@ export default class StartSessionScreen extends React.Component {
             if(data.msg.length == 0) {
               // Establezco la sesión
               AsyncStorage.setItem('username', this.state.username);
+              this.setState({ username: '', password: ''})
 
               // Voy a inicio
-              this.forceUpdate();
               this.props.navigation.navigate('Home');
             }
             else this.setState({ snack_visible: true, message: data.msg, username: '', password: ''});
@@ -83,7 +70,7 @@ export default class StartSessionScreen extends React.Component {
   render() {
     return (
       <View style={{flex: 1}}>
-        <Menu ref="menu" navigation={this.props.navigation} username={this.state.username} />
+        <Menu ref="menu" navigation={this.props.navigation} />
         <Text style={{ textAlign: 'center', fontSize: 30, margin: 10 }}>Iniciar Sesión</Text>
         
         <ScrollView>

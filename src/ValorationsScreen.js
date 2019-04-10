@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, Text, View } from "react-native";
+import {ScrollView, Text, View, AsyncStorage } from "react-native";
 import {Card} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
@@ -11,10 +11,30 @@ export default class ValorationsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      valoraciones: [0,1],
+      valoraciones: [],
       itemsPerPage: 4,
-      rating: 2
+      username: ''
     };
+  }
+
+  async componentWillMount() {
+    var username = await AsyncStorage.getItem('username');
+    if(username != undefined && username.length > 0) this.setState({ username: username });
+    else this.props.navigation.navigate('Home');
+
+    fetch('https://book-recommender0.herokuapp.com/valorations',{
+        method: 'POST',
+        body: JSON.stringify({ username: this.state.username, isbn: null }),
+        headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+          this.setState({ valoraciones: data.array, num_total_valoraciones: data.countValorations  });
+        })
+        .catch(err => console.log(err));
   }
 
   render() {
@@ -40,21 +60,23 @@ export default class ValorationsScreen extends React.Component {
                     return (
                       <ScrollView key={i}>
                         {
-                          this.state.valoraciones.slice(i,i+this.state.itemsPerPage).map((n) => {
+                          this.state.valoraciones.slice(i,i+this.state.itemsPerPage).map((valoracion) => {
                             return (
-                              <Card key={n} style={{ container: { backgroundColor: 'orange', marginHorizontal: 34, marginVertical: 15}}}>
-                                <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, marginTop: 5 }}>Las lágrimas de shiva</Text>
-                                <Text style={{ marginHorizontal: 15, marginVertical:5, fontWeight: 'bold'}}>albertosml realizó esta valoración el día 24/2/2019 a las 20:14:29:</Text>
-                                <Text style={{ marginHorizontal: 15, marginVertical: 10 }}>No soy mucho de los libros de intriga, pero la verdad es que este libro me gustó mucho, ya que este libro te engancha en la historia desde el primer momento y, además, tiene un buen final.</Text>
+                              <Card key={valoracion.id} style={{ container: { backgroundColor: 'orange', marginHorizontal: 34, marginVertical: 15}}}>
+                                <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, marginTop: 5 }}>{valoracion.book}</Text>
+                                <Text style={{ marginHorizontal: 15, marginVertical:5, fontWeight: 'bold'}}>{valoracion.user} realizó esta valoración el día {valoracion.fecha} a las {valoracion.hora}:</Text>
+                                <Text style={{ marginHorizontal: 15, marginVertical: 10 }}>{valoracion.description}</Text>
+                                
                                 <View style={{ flexDirection: 'row'}}>
                                   <Text style={{ marginHorizontal: 15, marginVertical:5, fontWeight: 'bold'}}>Nota:</Text>
-                                  <StarRating disabled={true} maxStars={5} rating={this.state.rating} starStyle={{ margin:2}} starSize={22} emptyStarColor="lightgray" fullStarColor="yellow"/>
+                                  <StarRating disabled={true} maxStars={5} rating={valoracion.note} starStyle={{ margin:2 }} starSize={22} emptyStarColor="lightgray" fullStarColor="yellow"/>
                                 </View> 
+      
                                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', margin:3}}>
                                   <Icon name="thumbs-up" size={24}/>
-                                  <Text> 1   </Text>
+                                  <Text> {valoracion.likes}   </Text>
                                   <Icon name="thumbs-down" size={24}/>
-                                  <Text> 2   </Text>
+                                  <Text> {valoracion.dislikes}   </Text>
                                 </View>
                               </Card>
                             )

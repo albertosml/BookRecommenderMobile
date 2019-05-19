@@ -7,26 +7,11 @@ export default class Menu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: '',
-      data: [],
-      search_data: []
+      options: [],
+      value: ''
     };
    
     this.renderHeader = this.renderHeader.bind(this);
-  }
-
-  componentWillMount() {
-    fetch('https://book-recommender0.herokuapp.com/title', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        for(let i in data.data) this.state.data.push(data.data[i].label);
-      })
   }
 
   renderHeader() {
@@ -37,11 +22,9 @@ export default class Menu extends React.Component {
           searchable={{
             autoFocus: true,
             placeholder: 'Buscar Libro...',
-            onChangeText: (text) => {
-              if(text.trim().length == 0) this.setState({ search_data: [] });
-              else this.setState({ text: text, search_data: this.state.data.filter(key => key.toUpperCase() !== '' && key.toUpperCase().indexOf(text.toUpperCase()) !== -1) });
-            },
-            onSearchClosed: () => this.setState({ search_data: [] })
+            onSubmitEditing: () => this.doSearch(),
+            onChangeText: (v) => this.setState({ value: v, options: [] }),
+            onSearchCloseRequested: () => this.setState({ options: [] })
           }}
           rightElement={['home']}
           onRightElementPress={ () => this.props.navigation.navigate('Home')}
@@ -54,8 +37,28 @@ export default class Menu extends React.Component {
     if(this.props.onUpdate == undefined) this.props.navigation.navigate('BookDetails', { isbn: isbn });
     else {
       this.props.onUpdate(isbn);
-      this.setState({ search_data: [] });
+      this.setState({ options: [] });
     }
+  }
+
+  doSearch() {
+    fetch('https://book-recommender0.herokuapp.com/dosearch',{
+        method: 'POST',
+        body: JSON.stringify({ text: this.state.value }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => { 
+            if(data.msg.length == 0) {
+                this.setState({ options: data.libros, value: '' });
+                if(data.libros.length == 0) M.toast({ 'html': 'No se han encontrado resultados'}); 
+            } 
+            else M.toast({ 'html': data.msg });
+        })
+        .catch(err => console.log(err));
   }
 
   render() {
@@ -63,7 +66,7 @@ export default class Menu extends React.Component {
       <View>
         <FlatList
           style={{ marginTop: Constants.statusBarHeight }}
-          data={this.state.search_data}
+          data={this.state.options}
           ListHeaderComponent={this.renderHeader}
           ItemSeparatorComponent={ () => {
             return (
@@ -73,8 +76,8 @@ export default class Menu extends React.Component {
             );
           }
           }
-          keyExtractor={item => item}  
-          renderItem={({item}) => (<Text onPress={() => this.onSelectItem(item.split(" - ")[1])} style={{ padding:10, fontSize:18, height:44, backgroundColor: '#ecdddd' }}>{item}</Text>)}
+          keyExtractor={item => item.value}  
+          renderItem={({item}) => (<Text onPress={() => this.onSelectItem(item.value)} style={{ padding:10, fontSize:18, height:44, backgroundColor: '#ecdddd' }}>{item.label}</Text>)}
         />
       </View>
     );

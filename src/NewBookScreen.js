@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, Text, TextInput, View, Image, AsyncStorage } from "react-native";
+import {ScrollView, Text, TextInput, View, Image, AsyncStorage, KeyboardAvoidingView } from "react-native";
 import {Card, Snackbar, Button} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
@@ -130,69 +130,73 @@ export default class NewBookScreen extends React.Component {
         <Menu navigation={this.props.navigation} />
         <Text style={{ textAlign: 'center', fontSize: 30, margin: 10 }}>Nuevo Libro</Text>
         
-        <ScrollView>
-          <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>ISBN</Text>
-              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.isbn} onChangeText={(i) => this.setState({ isbn: i })} />
-              <Text style={{ color: '#585858'}}>Para rellenado automático, introduzca el ISBN del libro para que sean rellenados los campos, excepto los géneros y la imagen. En el caso de que no podamos proporcionarle los datos, rellénelos usted mismo.</Text>
-            </View>
+        <View style={{flex: 1}}>
+          <KeyboardAvoidingView behavior="height">
+            <ScrollView>
+              <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>ISBN</Text>
+                  <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.isbn} onChangeText={(i) => this.setState({ isbn: i })} />
+                  <Text style={{ color: '#585858'}}>Para rellenado automático, introduzca el ISBN del libro para que sean rellenados los campos, excepto los géneros y la imagen. En el caso de que no podamos proporcionarle los datos, rellénelos usted mismo.</Text>
+                </View>
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Título</Text>
-              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.title} onChangeText={(t) => this.setState({ title: t })} />
-            </View>
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Título</Text>
+                  <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.title} onChangeText={(t) => this.setState({ title: t })} />
+                </View>
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Autores</Text>
-              <AutoTags tagsSelected={this.state.chips_author} createTagOnSpace={true} onCustomTagCreated={this.handleNewAuthor} handleDelete={this.handleDeleteAuthor} placeholder="Añada los autores..." />
-              <Text style={{ color: '#585858'}}>Escriba el nombre de los autores separados por comas.</Text>
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Autores</Text>
+                  <AutoTags tagsSelected={this.state.chips_author} createTagOnSpace={true} onCustomTagCreated={this.handleNewAuthor} handleDelete={this.handleDeleteAuthor} placeholder="Añada los autores..." />
+                  <Text style={{ color: '#585858'}}>Escriba el nombre de los autores separados por comas.</Text>
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Número de páginas</Text>
-              <TextInput keyboardType={"number-pad"} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={`${this.state.numpages}`} onChangeText={(n) => this.setState({ numpages: n })} />
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Número de páginas</Text>
+                  <TextInput keyboardType={"number-pad"} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={`${this.state.numpages}`} onChangeText={(n) => this.setState({ numpages: n })} />
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Fecha de publicación</Text>
-              <DatePicker placeholder=" " date={this.state.publicationdate} mode="date" onDateChange={(date) => this.setState({ publicationdate: date })} />
-            </View>  
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Fecha de publicación</Text>
+                  <DatePicker placeholder=" " date={this.state.publicationdate} mode="date" onDateChange={(date) => this.setState({ publicationdate: date })} />
+                </View>  
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>URL</Text>
-              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.url} onChangeText={(u) => this.setState({ url: u })} />
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>URL</Text>
+                  <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.url} onChangeText={(u) => this.setState({ url: u })} />
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Editorial</Text>
-              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.publisher} onChangeText={(p) => this.setState({ publisher: p })} />
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Editorial</Text>
+                  <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.publisher} onChangeText={(p) => this.setState({ publisher: p })} />
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Idioma</Text>
-              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.language} onChangeText={(l) => this.setState({ language: l })} />
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Idioma</Text>
+                  <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.language} onChangeText={(l) => this.setState({ language: l })} />
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Géneros Favoritos</Text>
-              <AutoTags suggestions={this.state.suggestions} tagsSelected={this.state.chips} createTagOnSpace={true} onCustomTagCreated={this.handleCreateTag} handleAddition={this.handleAddition} handleDelete={this.handleDelete} placeholder="Añada un género literario que le guste" />
-              <Text style={{ color: '#585858'}}>Busque su género en el autocompletado y selecciónelo con el ratón. Si no aparece, introdúzcalo manualmente y pulse la tecla de la coma (",").</Text>
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Géneros Favoritos</Text>
+                  <AutoTags suggestions={this.state.suggestions} tagsSelected={this.state.chips} createTagOnSpace={true} onCustomTagCreated={this.handleCreateTag} handleAddition={this.handleAddition} handleDelete={this.handleDelete} placeholder="Añada un género literario que le guste" />
+                  <Text style={{ color: '#585858'}}>Busque su género en el autocompletado y selecciónelo con el ratón. Si no aparece, introdúzcalo manualmente y pulse la tecla de la coma (",").</Text>
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858' }}>Imagen</Text>
-              {(() => {
-                if(this.state.image) {
-                  return <Image source={{ uri: 'data:image/png;base64,' + this.state.image }} style={{ width:200, height:200, marginLeft: 'auto', marginRight: 'auto', marginTop: 10 }} />
-                }
-              })()}
-              <Button accent raised text="Seleccionar imagen" style={{ container: { margin:20 }}} onPress={this.selectImage} />
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858' }}>Imagen</Text>
+                  {(() => {
+                    if(this.state.image) {
+                      return <Image source={{ uri: 'data:image/png;base64,' + this.state.image }} style={{ width:200, height:200, marginLeft: 'auto', marginRight: 'auto', marginTop: 10 }} />
+                    }
+                  })()}
+                  <Button accent raised text="Seleccionar imagen" style={{ container: { margin:20 }}} onPress={this.selectImage} />
+                </View> 
 
-            <Button primary raised text="Registrar" style={{ container: { margin: 20 }}} onPress={this.addBook} />
-          </Card>
-        </ScrollView>
+                <Button primary raised text="Registrar" style={{ container: { margin: 20 }}} onPress={this.addBook} />
+              </Card>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </View>
           
         <Snackbar visible={this.state.snack_visible} message={this.state.message} timeout={2000} onRequestClose={() => this.setState({ snack_visible: false })} />
         <Footer navigation={this.props.navigation} />

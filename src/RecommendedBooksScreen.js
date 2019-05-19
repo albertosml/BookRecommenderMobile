@@ -1,10 +1,12 @@
 import React from "react";
 import {ScrollView, Text, View, AsyncStorage } from "react-native";
-import {Card, Snackbar, Checkbox, Button} from 'react-native-material-ui';
+import {Card, Snackbar, Button} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import RadioForm from 'react-native-simple-radio-button';
+import { MaterialDialog } from 'react-native-material-dialog';
 
 export default class RecommendedBooksScreen extends React.Component {
   constructor(props) {
@@ -14,9 +16,8 @@ export default class RecommendedBooksScreen extends React.Component {
       itemsPerPage: 5,
       snack_visible: false,
       message: '',
-      check_generos: false,
-      check_valoraciones: false,
-      check_comentarios: false
+      option: 1, 
+      dialog: false
     };
 
     this.removeRecommendedBook = this.removeRecommendedBook.bind(this);
@@ -92,10 +93,36 @@ export default class RecommendedBooksScreen extends React.Component {
   }
 
   requestRecommendation() {
-    this.setState({ message: 'Recomendación solicitada', snack_visible: true });
-  }
+    this.setState({ message: 'Realizando recomendación, espere un instante', snack_visible: true });
 
+    fetch('https://book-recommender0.herokuapp.com/dorecommendation',{
+        method: 'POST',
+        body: JSON.stringify({ option: this.state.option, username: this.state.username }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+            if(data.msg.length == 0) {
+                this.setState({ libros: data.array });
+                this.setState({ option: 1 });
+                this.setState({ message: 'Recomendación realizada, se han obtenido ' + data.cont + ' libro/libros nuevos', snack_visible: true });
+            }
+            else this.setState({ message: data.msg, snack_visible: true });
+        })
+        .catch(err => console.log(err));
+  }
+    
   render() {
+    var radio_props = [
+      {label: 'Valoraciones', value: 1 },
+      {label: 'Géneros', value: 2 },
+      {label: 'Opiniones', value: 3 },
+      {label: 'Opiniones de géneros favoritos', value: 4 }
+    ];
+
     var numPages = this.state.libros.length / this.state.itemsPerPage;
     var longitud = this.state.libros.length % this.state.itemsPerPage == 0 ? numPages : numPages+1;
     return (
@@ -139,18 +166,24 @@ export default class RecommendedBooksScreen extends React.Component {
             )
           }
         })()}
+        
+        <MaterialDialog
+          title="Solicitar Recomendación"
+          visible={this.state.dialog}
+          onOk={() => {
+            this.setState({ dialog: false });
+            this.requestRecommendation();
+          }}
+          onCancel={() => this.setState({ dialog: false })}
+          cancelLabel="Cancelar"
+          okLabel="Solicitar">
+          <View>
+            <Text style={{ textAlign: 'center', marginVertical: 10}}>Seleccione el criterio en el que quiere que basemos sus recomendaciones:</Text>
+            <RadioForm radio_props={radio_props} initial={0} onPress={(value) => this.setState({ option: value })} />
+          </View>
+        </MaterialDialog>
 
-        <Swiper>
-          <ScrollView>
-            <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
-              <Text style={{ textAlign: 'center', marginVertical: 10}}>Seleccione el criterio o los criterios en los que quiere que basemos sus recomendaciones:</Text>
-              <Checkbox label="Géneros" value="generos" checked={this.state.check_generos} onCheck={(c) => this.setState({ check_generos: c})} />
-              <Checkbox label="Valoraciones" value="valoraciones" checked={this.state.check_valoraciones} onCheck={(c) => this.setState({ check_valoraciones: c})} />
-              <Checkbox label="Comentarios" value="comentarios" checked={this.state.check_comentarios} onCheck={(c) => this.setState({ check_comentarios: c})} />
-              <Button primary raised text="Solicitar Recomendación" style={{ container: { margin: 20 }}} onPress={this.requestRecommendation} />
-            </Card>
-          </ScrollView>
-        </Swiper>
+        <Button text="Solicitar Recomendación" style={{ container: { margin: 20, backgroundColor: 'lightgreen' }}} onPress={() => this.setState({ dialog: true })} />
           
         <Snackbar visible={this.state.snack_visible} message={this.state.message} timeout={2000} onRequestClose={() => this.setState({ snack_visible: false })} />
         <Footer navigation={this.props.navigation} />

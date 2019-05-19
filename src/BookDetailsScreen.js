@@ -8,7 +8,6 @@ import PureChart from 'react-native-pure-chart';
 import StarRating from 'react-native-star-rating';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
-import { COLOR } from 'react-native-material-ui';
 
 export default class BookDetailsScreen extends React.Component {
   constructor(props) {
@@ -40,7 +39,9 @@ export default class BookDetailsScreen extends React.Component {
       image: null,
       dialog_visible: false,
       active: "valorations",
-      dialog_comment: false
+      dialog_comment: false,
+      dialog_theme: false,
+      dialog_valoration: false
     };
 
     this.addComment = this.addComment.bind(this);
@@ -317,13 +318,8 @@ export default class BookDetailsScreen extends React.Component {
     return (
       <View style={{flex: 1}}>
         <Menu navigation={this.props.navigation} onUpdate={this.onUpdate} />
-        <View style={{ flexDirection: 'row', marginLeft: 'auto', marginRight: 'auto' }}>
-          <Text style={{ textAlign: 'center', fontSize: 30, margin: 10 }}>{this.state.titulo}</Text>
-          {(() => {
-            if(this.state.username != "admin") {
-              return <Icon name="book" style={{ marginTop: 8, color: COLOR.blue500 }} onPress={() => this.props.navigation.navigate('EditBook', { isbn: this.state.isbn })} onLongPress={() => this.setState({ snack_visible: true, message: 'Editar este libro'})} size={35}/>;
-            }
-          })()}
+        <View style={{ marginBottom: 3 }}>
+          <Text style={{ textAlign: 'center', fontSize: 30, margin: 5 }}>{this.state.titulo}</Text>
         </View>
 
         <MaterialDialog
@@ -423,23 +419,7 @@ export default class BookDetailsScreen extends React.Component {
                   {(() => { 
                     if(this.state.puede_valorar) {
                       return (
-                        <KeyboardAvoidingView behavior='padding'>
-                          <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
-                            <Text style={{ textAlign: 'center', marginVertical: 15, fontSize:18, fontWeight: "bold"}}>Valoración</Text>
-                                                
-                            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-                              <Text style={{ color: '#585858'}}>Descripción</Text>
-                              <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
-                            </View>
-                                  
-                            <View style={{ flexDirection: 'row'}}>
-                              <Text style={{ marginHorizontal: 20, marginVertical: 10, color: '#585858' }}>Nota:</Text>
-                              <StarRating disabled={false} maxStars={5} rating={this.state.rating} starStyle={{ margin:2, marginTop: 8}} starSize={22} emptyStarColor="lightgray" fullStarColor="yellow" selectedStar={(r) => this.setState({ rating: r})} />
-                            </View> 
-                                                  
-                            <Button primary raised text="Valorar" style={{ container: { margin: 20 }}} onPress={this.addValoration} />
-                          </Card>
-                        </KeyboardAvoidingView>
+                        <Button text="Nueva Valoración" style={{ container: { margin: 20, backgroundColor: 'lightgreen' }}} onPress={() => this.setState({ dialog_valoration: true })} />  
                       )
                     }
                   })()}
@@ -450,7 +430,7 @@ export default class BookDetailsScreen extends React.Component {
           else {
             if(this.state.temas.length == 0) {
               return (
-                <Swiper style={{ margin: 10, marginTop: 0, backgroundColor: 'lightgray' }}>
+                <Swiper style={{ margin: 10, marginTop: 0, backgroundColor: 'orange' }}>
                   <Text style={{ color: 'green', fontSize: 24, margin: 25, textAlign: 'center'}}>No hay temas añadidos</Text>
                 </Swiper>
               )
@@ -511,33 +491,64 @@ export default class BookDetailsScreen extends React.Component {
         {(() => {
           if(this.state.active == 'comments' && this.state.username != "admin" && this.state.username.length > 0) {
             return (
-              <KeyboardAvoidingView behavior="padding">
-                <View>
-                  <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
-                    <Text style={{ textAlign: 'center', marginVertical: 15, fontSize:18, fontWeight: "bold"}}>Nuevo Tema</Text>
-                                    
-                    <View style={{ marginHorizontal: 20 }}>
-                      <Text style={{ color: '#585858'}}>Título</Text>
-                      <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.title} onChangeText={(t) => this.setState({ title: t })} />
-                    </View>
-
-                    <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-                      <Text style={{ color: '#585858'}}>Descripción</Text>
-                      <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
-                    </View>
-                                        
-                    <Button primary raised text="Crear" style={{ container: { margin: 20 }}} onPress={this.addTheme} />
-                  </Card>
-                </View>
-              </KeyboardAvoidingView>  
+              <Button text="Nuevo Tema" style={{ container: { margin: 20, backgroundColor: 'lightgreen' }}} onPress={() => this.setState({ dialog_theme: true })} />  
             )
           }
         })()}
+
+        <MaterialDialog
+          title="Nueva Valoración"
+          visible={this.state.dialog_valoration}
+          onOk={() => {
+            this.setState({ dialog_valoration: false, rating: 0, description: '' });
+            this.addValoration();
+          }}
+          onCancel={() => this.setState({ dialog_valoration: false, rating: 0, description: '' })}
+          cancelLabel="Cancelar"
+          okLabel="Valorar">
+          <View>
+            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+              <Text style={{ color: '#585858'}}>Descripción</Text>
+              <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
+            </View>
+                                  
+            <View style={{ flexDirection: 'row'}}>
+              <Text style={{ marginHorizontal: 20, marginVertical: 10, color: '#585858' }}>Nota:</Text>
+              <StarRating disabled={false} maxStars={5} rating={this.state.rating} starStyle={{ margin:2, marginTop: 8}} starSize={22} emptyStarColor="lightgray" fullStarColor="yellow" selectedStar={(r) => this.setState({ rating: r})} />
+            </View> 
+          </View>
+        </MaterialDialog>
+
+        <MaterialDialog
+          title="Nuevo Tema"
+          visible={this.state.dialog_theme}
+          onOk={() => {
+            this.setState({ dialog_theme: false, title: '', description: '' });
+            this.addTheme();
+          }}
+          onCancel={() => this.setState({ dialog_theme: false, title: '', description: '' })}
+          cancelLabel="Cancelar"
+          okLabel="Crear">
+          <View>
+            <View style={{ marginHorizontal: 20 }}>
+              <Text style={{ color: '#585858'}}>Título</Text>
+              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.title} onChangeText={(t) => this.setState({ title: t })} />
+            </View>
+
+            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+              <Text style={{ color: '#585858'}}>Descripción</Text>
+              <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
+            </View>
+          </View>
+        </MaterialDialog>
         
         {(() => {
           if(this.state.username != undefined && this.state.username.length > 0 && this.state.username != "admin") {
             return (
               <ActionButton buttonColor="rgba(231,76,60,1)" style={{ marginBottom: 60 }}>
+                <ActionButton.Item buttonColor='blue' title="EDITAR LIBRO" onPress={() => this.props.navigation.navigate('EditBook', { isbn: this.state.isbn })}>
+                  <Icon name="book" size={20} />
+                </ActionButton.Item>
                 <ActionButton.Item buttonColor='green' title="AGREGAR A PENDIENTES" onPress={this.addPendingBook}>
                   <Icon name="plus" size={20} />
                 </ActionButton.Item>
@@ -556,6 +567,9 @@ export default class BookDetailsScreen extends React.Component {
           else {
             return (
               <ActionButton buttonColor="rgba(231,76,60,1)" style={{ marginBottom: 60 }}>
+                <ActionButton.Item buttonColor='blue' title="EDITAR LIBRO" onPress={() => this.props.navigation.navigate('EditBook', { isbn: this.state.isbn })}>
+                  <Icon name="book" size={20} />
+                </ActionButton.Item>
                 <ActionButton.Item buttonColor='yellow' title="DATOS DEL LIBRO" onPress={() => this.setState({ dialog_visible: true })}>
                   <Icon name="info" size={20} />
                 </ActionButton.Item>

@@ -1,6 +1,6 @@
 import React from "react";
-import {ScrollView, Text, View, TextInput, AsyncStorage, KeyboardAvoidingView } from "react-native";
-import {Card, Snackbar, Button} from 'react-native-material-ui';
+import {ScrollView, Text, View, TextInput, AsyncStorage } from "react-native";
+import {Snackbar, Button} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
 import Swiper from 'react-native-swiper';
@@ -17,7 +17,8 @@ export default class FreeThemesScreen extends React.Component {
       title: '',
       description: '',
       dialog_comment: false,
-      username: ''
+      username: '',
+      dialog_theme: false
     };
 
     this.addComment = this.addComment.bind(this);
@@ -97,7 +98,7 @@ export default class FreeThemesScreen extends React.Component {
         {(() => {
             if(this.state.temas.length == 0) {
               return (
-                <Swiper style={{ margin: 10, marginTop: 0, backgroundColor: 'lightgray' }}>
+                <Swiper style={{ margin: 10, marginTop: 0, backgroundColor: 'orange' }}>
                   <Text style={{ color: 'green', fontSize: 24, margin: 25, textAlign: 'center'}}>No hay temas añadidos</Text>
                 </Swiper>
               )
@@ -155,28 +156,33 @@ export default class FreeThemesScreen extends React.Component {
           }
         )()}
 
+        <MaterialDialog
+          title="Nuevo Tema"
+          visible={this.state.dialog_theme}
+          onOk={() => {
+            this.setState({ dialog_theme: false, title: '', description: '' });
+            this.addTheme();
+          }}
+          onCancel={() => this.setState({ dialog_theme: false, title: '', description: '' })}
+          cancelLabel="Cancelar"
+          okLabel="Crear">
+          <View>
+            <View style={{ marginHorizontal: 20 }}>
+              <Text style={{ color: '#585858'}}>Título</Text>
+              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.title} onChangeText={(t) => this.setState({ title: t })} />
+            </View>
+
+            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+              <Text style={{ color: '#585858'}}>Descripción</Text>
+              <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
+            </View>
+          </View>
+        </MaterialDialog>
+
         {(() => {
           if(this.state.username != "admin" && this.state.username.length > 0) {
             return (
-              <KeyboardAvoidingView behavior="padding">
-                <View>
-                  <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
-                    <Text style={{ textAlign: 'center', marginVertical: 15, fontSize:18, fontWeight: "bold"}}>Nuevo Tema</Text>
-                                    
-                    <View style={{ marginHorizontal: 20 }}>
-                      <Text style={{ color: '#585858'}}>Título</Text>
-                      <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.title} onChangeText={(t) => this.setState({ title: t })} />
-                    </View>
-
-                    <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-                      <Text style={{ color: '#585858'}}>Descripción</Text>
-                      <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
-                    </View>
-                                        
-                    <Button primary raised text="Crear" style={{ container: { margin: 20 }}} onPress={this.addTheme} />
-                  </Card>
-                </View>
-              </KeyboardAvoidingView>  
+              <Button text="Nuevo Tema" style={{ container: { margin: 20, backgroundColor: 'lightgreen' }}} onPress={() => this.setState({ dialog_theme: true })} />  
             )
           }
         })()}

@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, Text, TextInput, View, AsyncStorage } from "react-native";
+import {ScrollView, Text, TextInput, View, AsyncStorage, KeyboardAvoidingView } from "react-native";
 import {Card, Snackbar, Button} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
@@ -54,20 +54,23 @@ export default class NewSuggestionScreen extends React.Component {
             return (
               <View style={{flex: 1}}>
                 <Text style={{ textAlign: 'center', fontSize: 30, margin: 10 }}>Añadir noticia</Text>
-        
-                <ScrollView>
-                  <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
-                    <Text style={{ textAlign: 'center', marginVertical: 15, fontSize:18, fontWeight: "bold"}}>Nueva noticia</Text>
-                    
-                    <View style={{ marginHorizontal: 20 }}>
-                      <Text style={{ color: '#585858'}}>Descripción</Text>
-                      <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
-                      <Text style={{ color: '#585858'}}>Aquí se puede comentar cualquier sugerencia sobre el uso de la web o novedad sobre ella.</Text>
-                    </View>
+              
+                <KeyboardAvoidingView behavior="height">
+                  <ScrollView>
+                    <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
+                      <Text style={{ textAlign: 'center', marginVertical: 15, fontSize:18, fontWeight: "bold"}}>Nueva noticia</Text>
                       
-                    <Button primary raised text="Realizar" style={{ container: { margin: 20 }}} onPress={this.addSuggestion} />
-                  </Card>
-                </ScrollView>
+                      <View style={{ marginHorizontal: 20 }}>
+                        <Text style={{ color: '#585858'}}>Descripción</Text>
+                        <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
+                        <Text style={{ color: '#585858'}}>Aquí se puede comentar cualquier sugerencia sobre el uso de la web o novedad sobre ella.</Text>
+                      </View>
+                        
+                      <Button primary raised text="Realizar" style={{ container: { margin: 20 }}} onPress={this.addSuggestion} />
+                    </Card>
+                  </ScrollView>
+                </KeyboardAvoidingView>
+                  
               </View>
             )
           }
@@ -76,19 +79,21 @@ export default class NewSuggestionScreen extends React.Component {
               <View style={{flex: 1}}>
                 <Text style={{ textAlign: 'center', fontSize: 30, margin: 10 }}>Añadir sugerencia</Text>
         
-                <ScrollView>
-                  <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
-                    <Text style={{ textAlign: 'center', marginVertical: 15, fontSize:18, fontWeight: "bold"}}>Nueva Sugerencia</Text>
-                    
-                    <View style={{ marginHorizontal: 20 }}>
-                      <Text style={{ color: '#585858'}}>Descripción</Text>
-                      <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
-                      <Text style={{ color: '#585858'}}>Aquí se puede comentar cualquier sugerencia, duda, problema o arreglo sobre esta web, con el objetivo de hacer mejorar este proyecto.</Text>
-                    </View>
+                <KeyboardAvoidingView behavior="height">
+                  <ScrollView>
+                    <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
+                      <Text style={{ textAlign: 'center', marginVertical: 15, fontSize:18, fontWeight: "bold"}}>Nueva Sugerencia</Text>
                       
-                    <Button primary raised text="Realizar" style={{ container: { margin: 20 }}} onPress={this.addSuggestion} />
-                  </Card>
-                </ScrollView>
+                      <View style={{ marginHorizontal: 20 }}>
+                        <Text style={{ color: '#585858'}}>Descripción</Text>
+                        <TextInput multiline={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.description} onChangeText={(d) => this.setState({ description: d })} />
+                        <Text style={{ color: '#585858'}}>Aquí se puede comentar cualquier sugerencia, duda, problema o arreglo sobre esta web, con el objetivo de hacer mejorar este proyecto.</Text>
+                      </View>
+                        
+                      <Button primary raised text="Realizar" style={{ container: { margin: 20 }}} onPress={this.addSuggestion} />
+                    </Card>
+                  </ScrollView>
+                </KeyboardAvoidingView>
               </View>
             )
           }

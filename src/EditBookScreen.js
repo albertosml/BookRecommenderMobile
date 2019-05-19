@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, Text, TextInput, View, Image, Linking } from "react-native";
+import {ScrollView, Text, TextInput, View, Image, Linking, KeyboardAvoidingView } from "react-native";
 import {Card, Snackbar, Button} from 'react-native-material-ui';
 import Menu from './Menu';
 import Footer from './Footer';
@@ -164,73 +164,77 @@ export default class EditBookScreen extends React.Component {
         <Menu navigation={this.props.navigation} />
         <Text style={{ textAlign: 'center', fontSize: 30, margin: 10 }}>Editar libro con ISBN: {this.state.isbn}</Text>
         
-        <ScrollView>
-          <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Título</Text>
-              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.title} onChangeText={(t) => this.setState({ title: t })} />
-              <Text style={{ color: '#585858'}}>Título actual: {this.state.title_old}</Text>
-            </View>
+        <View style={{flex: 1}}>
+          <KeyboardAvoidingView behavior="height">
+            <ScrollView>
+              <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Título</Text>
+                  <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.title} onChangeText={(t) => this.setState({ title: t })} />
+                  <Text style={{ color: '#585858'}}>Título actual: {this.state.title_old}</Text>
+                </View>
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Autores</Text>
-              <AutoTags tagsSelected={this.state.chips_author} createTagOnSpace={true} onCustomTagCreated={this.handleNewAuthor} handleDelete={this.handleDeleteAuthor} placeholder="Añada los autores..." />
-              <Text style={{ color: '#585858'}}>Escriba el nombre de los autores separados por comas.</Text>
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Autores</Text>
+                  <AutoTags tagsSelected={this.state.chips_author} createTagOnSpace={true} onCustomTagCreated={this.handleNewAuthor} handleDelete={this.handleDeleteAuthor} placeholder="Añada los autores..." />
+                  <Text style={{ color: '#585858'}}>Escriba el nombre de los autores separados por comas.</Text>
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Número de páginas</Text>
-              <TextInput keyboardType={"number-pad"} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={`${this.state.numpages}`} onChangeText={(n) => this.setState({ numpages: n })} />
-              <Text style={{ color: '#585858'}}>Número de páginas actual: {this.state.numpages_old}</Text>
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Número de páginas</Text>
+                  <TextInput keyboardType={"number-pad"} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={`${this.state.numpages}`} onChangeText={(n) => this.setState({ numpages: n })} />
+                  <Text style={{ color: '#585858'}}>Número de páginas actual: {this.state.numpages_old}</Text>
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Fecha de publicación</Text>
-              <DatePicker placeholder=" " date={this.state.publicationdate} mode="date" onDateChange={(date) => this.setState({ publicationdate: date })} />
-              <Text style={{ color: '#585858'}}>Fecha de publicación actual: {this.state.publicationdate_old}</Text>
-            </View>  
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Fecha de publicación</Text>
+                  <DatePicker placeholder=" " date={this.state.publicationdate} mode="date" onDateChange={(date) => this.setState({ publicationdate: date })} />
+                  <Text style={{ color: '#585858'}}>Fecha de publicación actual: {this.state.publicationdate_old}</Text>
+                </View>  
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>URL</Text>
-              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.url} onChangeText={(u) => this.setState({ url: u })} />
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={{ color: '#585858' }}>URL actual: </Text>
-                <Text style={{ color: 'blue' }} onPress={() => Linking.openURL(this.state.url_old)}>Ver URL</Text>
-              </View>
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>URL</Text>
+                  <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.url} onChangeText={(u) => this.setState({ url: u })} />
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text style={{ color: '#585858' }}>URL actual: </Text>
+                    <Text style={{ color: 'blue' }} onPress={() => Linking.openURL(this.state.url_old)}>Ver URL</Text>
+                  </View>
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Editorial</Text>
-              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.publisher} onChangeText={(p) => this.setState({ publisher: p })} />
-              <Text style={{ color: '#585858'}}>Editorial actual: {this.state.publisher_old}</Text>
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Editorial</Text>
+                  <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.publisher} onChangeText={(p) => this.setState({ publisher: p })} />
+                  <Text style={{ color: '#585858'}}>Editorial actual: {this.state.publisher_old}</Text>
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Idioma</Text>
-              <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.language} onChangeText={(l) => this.setState({ language: l })} />
-              <Text style={{ color: '#585858'}}>Idioma actual: {this.state.language_old}</Text>
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Idioma</Text>
+                  <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.language} onChangeText={(l) => this.setState({ language: l })} />
+                  <Text style={{ color: '#585858'}}>Idioma actual: {this.state.language_old}</Text>
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858'}}>Géneros Favoritos</Text>
-              <AutoTags suggestions={this.state.suggestions} tagsSelected={this.state.chips} createTagOnSpace={true} onCustomTagCreated={this.handleCreateTag} handleAddition={this.handleAddition} handleDelete={this.handleDelete} placeholder="Añada un género literario que le guste" />
-              <Text style={{ color: '#585858'}}>Busque su género en el autocompletado y selecciónelo con el ratón. Si no aparece, introdúzcalo manualmente y pulse la tecla de la coma (",").</Text>
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858'}}>Géneros Favoritos</Text>
+                  <AutoTags suggestions={this.state.suggestions} tagsSelected={this.state.chips} createTagOnSpace={true} onCustomTagCreated={this.handleCreateTag} handleAddition={this.handleAddition} handleDelete={this.handleDelete} placeholder="Añada un género literario que le guste" />
+                  <Text style={{ color: '#585858'}}>Busque su género en el autocompletado y selecciónelo con el ratón. Si no aparece, introdúzcalo manualmente y pulse la tecla de la coma (",").</Text>
+                </View> 
 
-            <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-              <Text style={{ color: '#585858' }}>Imagen</Text>
-              {(() => {
-                if(this.state.image) {
-                  return <Image source={{ uri: this.state.image }} style={{ width:200, height:200, marginLeft: 'auto', marginRight: 'auto', marginTop: 10 }} />
-                }
-              })()}
-              <Button accent raised text="Seleccionar imagen" style={{ container: { margin:20 }}} onPress={this.selectImage} />
-              <Text style={{ color: '#585858'}}>Las imágenes que se suban a esta web deben ser libres, es decir, sin derechos de autor y, de un tamaño menor a 16MB. No nos haremos responsables de las imágenes subidas a esta web que no sean libres.</Text>
-            </View> 
+                <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                  <Text style={{ color: '#585858' }}>Imagen</Text>
+                  {(() => {
+                    if(this.state.image) {
+                      return <Image source={{ uri: this.state.image }} style={{ width:200, height:200, marginLeft: 'auto', marginRight: 'auto', marginTop: 10 }} />
+                    }
+                  })()}
+                  <Button accent raised text="Seleccionar imagen" style={{ container: { margin:20 }}} onPress={this.selectImage} />
+                  <Text style={{ color: '#585858'}}>Las imágenes que se suban a esta web deben ser libres, es decir, sin derechos de autor y, de un tamaño menor a 16MB. No nos haremos responsables de las imágenes subidas a esta web que no sean libres.</Text>
+                </View> 
 
-            <Button primary raised text="Editar" style={{ container: { margin: 20 }}} onPress={this.editBook} />
-          </Card>
-        </ScrollView>
+                <Button primary raised text="Editar" style={{ container: { margin: 20 }}} onPress={this.editBook} />
+              </Card>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </View>
           
         <Snackbar visible={this.state.snack_visible} message={this.state.message} timeout={2000} onRequestClose={() => this.setState({ snack_visible: false })} />
         <Footer navigation={this.props.navigation} />

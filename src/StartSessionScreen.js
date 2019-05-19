@@ -85,7 +85,7 @@ export default class StartSessionScreen extends React.Component {
               <TextInput secureTextEntry={true} style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.password} onChangeText={(p) => this.setState({ password: p })} />
             </View> 
             
-            <Button primary raised text="Registrar" style={{ container: { margin: 20 }}} onPress={this.startSession} />
+            <Button primary raised text="Iniciar" style={{ container: { margin: 20 }}} onPress={this.startSession} />
 
             <Text onPress={this.rememberPassword} style={{ color: 'blue', textAlign: 'center', marginVertical: 10}}>Se me ha olvidado la contraseña</Text>
           </Card>

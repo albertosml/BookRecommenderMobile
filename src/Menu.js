@@ -34,6 +34,8 @@ export default class Menu extends React.Component {
   }
 
   onSelectItem(isbn) {
+    if(isbn.length == 0) return ;
+
     if(this.props.onUpdate == undefined) this.props.navigation.navigate('BookDetails', { isbn: isbn });
     else {
       this.props.onUpdate(isbn);
@@ -54,9 +56,9 @@ export default class Menu extends React.Component {
         .then(data => { 
             if(data.msg.length == 0) {
                 this.setState({ options: data.libros, value: '' });
-                if(data.libros.length == 0) M.toast({ 'html': 'No se han encontrado resultados'}); 
+                if(data.libros.length == 0) this.setState({ options: [{ label: 'No se han encontrado resultados', value: '' }] }); 
             } 
-            else M.toast({ 'html': data.msg });
+            else this.setState({ options: [{ label: data.msg, value: '' }] });
         })
         .catch(err => console.log(err));
   }

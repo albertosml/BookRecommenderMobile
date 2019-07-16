@@ -25,7 +25,7 @@ export default class ReadedBooksScreen extends React.Component {
     if(username != undefined && username == 'admin') this.setState({ username: username });
     else this.props.navigation.navigate('Home');
 
-    fetch('https://book-recommender0.herokuapp.com/genrelist',{
+    fetch('http://35.180.69.250:3000/genrelist',{
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -40,7 +40,7 @@ export default class ReadedBooksScreen extends React.Component {
   }
 
   removeGenre(name) {
-    fetch('https://book-recommender0.herokuapp.com/removegenre',{
+    fetch('http://35.180.69.250:3000/removegenre',{
         method: 'POST',
         body: JSON.stringify({ name: name }),
         headers: {

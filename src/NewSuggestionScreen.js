@@ -23,7 +23,7 @@ export default class NewSuggestionScreen extends React.Component {
   }
  
   addSuggestion(){
-    fetch('https://book-recommender0.herokuapp.com/suggestion/signup',{
+    fetch('http://35.180.69.250:3000/suggestion/signup',{
         method: 'POST',
         body: JSON.stringify(this.state),
         headers: {

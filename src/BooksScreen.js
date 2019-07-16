@@ -19,7 +19,7 @@ export default class BooksScreen extends React.Component {
   }
 
   obtainBooks() {
-    fetch('https://book-recommender0.herokuapp.com/books',{
+    fetch('http://35.180.69.250:3000/books',{
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -41,7 +41,7 @@ export default class BooksScreen extends React.Component {
   }
 
   removeBook(isbn) {
-    fetch('https://book-recommender0.herokuapp.com/removebook',{
+    fetch('http://35.180.69.250:3000/removebook',{
         method: 'POST',
         body: JSON.stringify({ isbn: isbn }),
         headers: {

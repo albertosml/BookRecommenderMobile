@@ -31,7 +31,7 @@ export default class NewUserScreen extends React.Component {
     var username = await AsyncStorage.getItem('username');
     if(username != undefined && username.length > 0) this.props.navigation.navigate('Home');
 
-    fetch('https://book-recommender0.herokuapp.com/genrelist',{
+    fetch('http://35.180.69.250:3000/genrelist',{
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -55,7 +55,7 @@ export default class NewUserScreen extends React.Component {
   }
 
   addUser() {
-    fetch('https://book-recommender0.herokuapp.com/users/signup',{
+    fetch('http://35.180.69.250:3000/users/signup',{
         method: 'POST',
         body: JSON.stringify(this.state),
         headers: {

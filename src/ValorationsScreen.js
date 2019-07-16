@@ -22,7 +22,7 @@ export default class ValorationsScreen extends React.Component {
     if(username != undefined && username.length > 0) this.setState({ username: username });
     else this.props.navigation.navigate('Home');
 
-    fetch('https://book-recommender0.herokuapp.com/valorations',{
+    fetch('http://35.180.69.250:3000/valorations',{
         method: 'POST',
         body: JSON.stringify({ username: this.state.username, isbn: null }),
         headers: {

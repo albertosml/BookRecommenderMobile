@@ -39,7 +39,7 @@ export default class NewBookScreen extends React.Component {
   async componentWillMount() {
     this.setState({ username: await AsyncStorage.getItem('username') });
 
-    fetch('https://book-recommender0.herokuapp.com/genrelist',{
+    fetch('http://35.180.69.250:3000/genrelist',{
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -98,7 +98,7 @@ export default class NewBookScreen extends React.Component {
   }
 
   addBook() {
-    fetch('https://book-recommender0.herokuapp.com/book/signup',{
+    fetch('http://35.180.69.250:3000/book/signup',{
         method: 'POST',
         body: JSON.stringify(this.state),
         headers: {

@@ -44,7 +44,7 @@ export default class EditBookScreen extends React.Component {
   }
 
   componentWillMount() {
-    fetch('https://book-recommender0.herokuapp.com/genrelist',{
+    fetch('http://35.180.69.250:3000/genrelist',{
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -66,7 +66,7 @@ export default class EditBookScreen extends React.Component {
         })   
         .catch(err => console.log(err));
 
-    fetch('https://book-recommender0.herokuapp.com/book/data',{
+    fetch('http://35.180.69.250:3000/book/data',{
         method: 'POST',
         body: JSON.stringify({ isbn: this.props.navigation.getParam('isbn', '') }),
         headers: {
@@ -132,7 +132,7 @@ export default class EditBookScreen extends React.Component {
   }
 
   editBook() { 
-    fetch('https://book-recommender0.herokuapp.com/book/edit',{
+    fetch('http://35.180.69.250:3000/book/edit',{
         method: 'POST',
         body: JSON.stringify(this.state),
         headers: {

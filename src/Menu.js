@@ -44,7 +44,7 @@ export default class Menu extends React.Component {
   }
 
   doSearch() {
-    fetch('https://book-recommender0.herokuapp.com/dosearch',{
+    fetch('http://35.180.69.250:3000/dosearch',{
         method: 'POST',
         body: JSON.stringify({ text: this.state.value }),
         headers: {

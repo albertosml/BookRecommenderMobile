@@ -57,7 +57,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   async obtainData(isbn) {
-    fetch('https://book-recommender0.herokuapp.com/book/data',{
+    fetch('http://35.180.69.250:3000/book/data',{
         method: 'POST',
         body: JSON.stringify({ isbn: isbn }),
         headers: {
@@ -90,7 +90,7 @@ export default class BookDetailsScreen extends React.Component {
       })  
       .catch(err => console.log(err));
 
-    fetch('https://book-recommender0.herokuapp.com/canvalorate',{
+    fetch('http://35.180.69.250:3000/canvalorate',{
         method: 'POST',
         body: JSON.stringify({ isbn: isbn, username: this.state.username }),
         headers: {
@@ -123,7 +123,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   getValorations(isbn) {
-    fetch('https://book-recommender0.herokuapp.com/valorations',{
+    fetch('http://35.180.69.250:3000/valorations',{
         method: 'POST',
         body: JSON.stringify({ username: null, isbn: isbn }),
         headers: {
@@ -159,7 +159,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   getThemes(isbn){
-    fetch('https://book-recommender0.herokuapp.com/themes',{
+    fetch('http://35.180.69.250:3000/themes',{
         method: 'POST',
         body: JSON.stringify({ book: isbn, username: this.state.username }),
         headers: {
@@ -175,7 +175,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   addLike(id) {
-    fetch('https://book-recommender0.herokuapp.com/givelike',{
+    fetch('http://35.180.69.250:3000/givelike',{
         method: 'POST',
         body: JSON.stringify({ like: true, valorationid: id, username: this.state.username }),
         headers: {
@@ -198,7 +198,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   addDislike(id) {
-    fetch('https://book-recommender0.herokuapp.com/givelike',{
+    fetch('http://35.180.69.250:3000/givelike',{
         method: 'POST',
         body: JSON.stringify({ like: false, valorationid: id, username: this.state.username }),
         headers: {
@@ -218,7 +218,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   addTheme(){
-    fetch('https://book-recommender0.herokuapp.com/theme/signup',{
+    fetch('http://35.180.69.250:3000/theme/signup',{
         method: 'POST',
         body: JSON.stringify({ title: this.state.title, description: this.state.description, isbn: this.state.isbn, username: this.state.username }),
         headers: {
@@ -238,7 +238,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   addComment(temaId) {
-    fetch('https://book-recommender0.herokuapp.com/comment/signup',{
+    fetch('http://35.180.69.250:3000/comment/signup',{
         method: 'POST',
         body: JSON.stringify({ temaid: temaId, response: this.state.response, username: this.state.username }),
         headers: {
@@ -258,7 +258,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   addPendingBook() {
-    fetch('https://book-recommender0.herokuapp.com/newpendingbook',{
+    fetch('http://35.180.69.250:3000/newpendingbook',{
         method: 'POST',
         body: JSON.stringify({ isbn: this.state.isbn, username: this.state.username }),
         headers: {
@@ -275,7 +275,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   addReadedBook() {
-    fetch('https://book-recommender0.herokuapp.com/addreadedbook',{
+    fetch('http://35.180.69.250:3000/addreadedbook',{
         method: 'POST',
         body: JSON.stringify({ isbn: this.state.isbn, username: this.state.username }),
         headers: {
@@ -295,7 +295,7 @@ export default class BookDetailsScreen extends React.Component {
   }
 
   addValoration() {
-    fetch('https://book-recommender0.herokuapp.com/valoration/signup',{
+    fetch('http://35.180.69.250:3000/valoration/signup',{
       method: 'POST',
       body: JSON.stringify({ description: this.state.description, note: this.state.rating, isbn: this.state.isbn, username: this.state.username }),
       headers: {

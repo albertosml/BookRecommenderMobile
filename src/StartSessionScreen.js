@@ -24,9 +24,9 @@ export default class StartSessionScreen extends React.Component {
   }
 
   startSession() {
-    fetch('https://book-recommender0.herokuapp.com/users/signin',{
+    fetch('http://35.180.69.250:3000/users/signin',{
         method: 'POST',
-        body: JSON.stringify({ username: this.state.username, password: this.state.password }),
+        body: JSON.stringify({ username: this.state.username.trim(), password: this.state.password }),
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -36,7 +36,7 @@ export default class StartSessionScreen extends React.Component {
         .then(data => {
             if(data.msg.length == 0) {
               // Establezco la sesión
-              AsyncStorage.setItem('username', this.state.username);
+              AsyncStorage.setItem('username', data.username);
               this.setState({ username: '', password: ''})
 
               // Voy a inicio
@@ -50,7 +50,7 @@ export default class StartSessionScreen extends React.Component {
   rememberPassword() {
     if(this.state.username.length == 0) this.setState({ message: 'Introduzca el nombre del usuario en su campo correspondiente', snack_visible: true });
     else {
-      fetch('https://book-recommender0.herokuapp.com/rememberpassword', {
+      fetch('http://35.180.69.250:3000/rememberpassword', {
           method: 'POST',
           body: JSON.stringify({ username: this.state.username }),
           headers: {
@@ -61,7 +61,7 @@ export default class StartSessionScreen extends React.Component {
           .then(res => res.json())
           .then(data => {
             if(data.msg.length == 0) this.setState({ snack_visible: true, message: 'Correo enviado a: ' + data.email});
-            else M.toast({html: data.msg});
+            else this.setState({ snack_visible: true, message: data.msg});
           })
           .catch(err => console.log(err));
     }
@@ -87,7 +87,7 @@ export default class StartSessionScreen extends React.Component {
             
             <Button primary raised text="Iniciar" style={{ container: { margin: 20 }}} onPress={this.startSession} />
 
-            <Text onPress={this.rememberPassword} style={{ color: 'blue', textAlign: 'center', marginVertical: 10}}>Se me ha olvidado la contraseña</Text>
+            <Button onPress={this.rememberPassword} style={{ color: 'blue', textAlign: 'center', marginVertical: 10}} text="Se me ha olvidado la contraseña" />
           </Card>
         </ScrollView>
           

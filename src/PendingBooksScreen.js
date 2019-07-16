@@ -13,7 +13,8 @@ export default class PendingBooksScreen extends React.Component {
       libros: [],
       itemsPerPage: 4,
       snack_visible: false,
-      message: ''
+      message: '',
+      username: ''
     };
 
     this.removePendingBook = this.removePendingBook.bind(this);
@@ -25,7 +26,7 @@ export default class PendingBooksScreen extends React.Component {
     if(username != undefined && username.length > 0) this.setState({ username: username });
     else this.props.navigation.navigate('Home');
 
-    fetch('https://book-recommender0.herokuapp.com/pendingbooks',{
+    fetch('http://35.180.69.250:3000/pendingbooks',{
       method: 'POST',
       body: JSON.stringify({ username: this.state.username }),
       headers: {
@@ -41,7 +42,7 @@ export default class PendingBooksScreen extends React.Component {
   }
 
   removePendingBook(isbn) {
-    fetch('https://book-recommender0.herokuapp.com/removependingbook',{
+    fetch('http://35.180.69.250:3000/removependingbook',{
         method: 'POST',
         body: JSON.stringify({ isbn: isbn, username: this.state.username }),
         headers: {
@@ -57,7 +58,7 @@ export default class PendingBooksScreen extends React.Component {
 }
 
 addReadedBook(isbn) {
-    fetch('https://book-recommender0.herokuapp.com/removependingbook',{
+    fetch('http://35.180.69.250:3000/removependingbook',{
         method: 'POST',
         body: JSON.stringify({ isbn: isbn, username: this.state.username }),
         headers: {
@@ -69,7 +70,7 @@ addReadedBook(isbn) {
         .then(data => {
             this.setState({ libros: data.array });
 
-            fetch('https://book-recommender0.herokuapp.com/addreadedbook',{
+            fetch('http://35.180.69.250:3000/addreadedbook',{
                 method: 'POST',
                 body: JSON.stringify({ isbn: isbn, username: this.state.username }),
                 headers: {

@@ -34,7 +34,7 @@ export default class FreeThemesScreen extends React.Component {
   }
 
   getThemes(){
-    fetch('https://book-recommender0.herokuapp.com/themes',{
+    fetch('http://35.180.69.250:3000/themes',{
         method: 'POST',
         body: JSON.stringify({ book: null, username: this.state.username }),
         headers: {
@@ -50,7 +50,7 @@ export default class FreeThemesScreen extends React.Component {
   }
 
   addTheme(){
-    fetch('https://book-recommender0.herokuapp.com/theme/signup',{
+    fetch('http://35.180.69.250:3000/theme/signup',{
         method: 'POST',
         body: JSON.stringify({ title: this.state.title, description: this.state.description, isbn: null, username: this.state.username }),
         headers: {
@@ -70,7 +70,7 @@ export default class FreeThemesScreen extends React.Component {
   }
 
   addComment(temaId) {
-    fetch('https://book-recommender0.herokuapp.com/comment/signup',{
+    fetch('http://35.180.69.250:3000/comment/signup',{
         method: 'POST',
         body: JSON.stringify({ temaid: temaId, response: this.state.response, username: this.state.username }),
         headers: {

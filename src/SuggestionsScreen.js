@@ -13,14 +13,15 @@ export default class SuggestionsScreen extends React.Component {
       sugerencias: [],
       itemsPerPage: 4,
       snack_visible: false,
-      message: ''
+      message: '',
+      username: ''
     };
 
     this.getSuggestions = this.getSuggestions.bind(this);
   }
 
   getSuggestions() {
-    fetch('https://book-recommender0.herokuapp.com/suggestions',{
+    fetch('http://35.180.69.250:3000/suggestions',{
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -43,7 +44,7 @@ export default class SuggestionsScreen extends React.Component {
   }
 
   removeSuggestion(id) {
-    fetch('https://book-recommender0.herokuapp.com/removesuggestion',{
+    fetch('http://35.180.69.250:3000/removesuggestion',{
         method: 'POST',
         body: JSON.stringify({ id: id }),
         headers: {
@@ -87,7 +88,7 @@ export default class SuggestionsScreen extends React.Component {
                           this.state.sugerencias.slice(i,i+this.state.itemsPerPage).map((sugerencia) => {
                             return (
                               <Card key={sugerencia.id} style={{ container: { backgroundColor: 'orange', marginHorizontal: 34, marginVertical: 15}}}>
-                                <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, marginTop: 5 }}>Administrador</Text>
+                                <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, marginTop: 5 }}>{sugerencia.user}</Text>
                                 <Text style={{ marginHorizontal: 15, marginVertical: 10 }}>{sugerencia.description}</Text>
                                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', margin:3}}>
                                   <Icon name="minus" style={{ color: 'blue' }} size={24} onPress={() => this.removeSuggestion(sugerencia.id)} onLongPress={() => this.setState({ snack_visible: true, message: "Eliminar sugerencia" })} />

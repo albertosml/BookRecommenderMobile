@@ -37,7 +37,7 @@ export default class ProfileScreen extends React.Component {
     if(username != undefined && username.length > 0) this.setState({ username_old: username });
     else this.props.navigation.navigate('Home');
 
-    fetch('https://book-recommender0.herokuapp.com/genrelist',{
+    fetch('http://35.180.69.250:3000/genrelist',{
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -59,7 +59,7 @@ export default class ProfileScreen extends React.Component {
         })   
         .catch(err => console.log(err));
 
-    fetch('https://book-recommender0.herokuapp.com/user/data',{
+    fetch('http://35.180.69.250:3000/user/data',{
         method: 'POST',
         body: JSON.stringify({ username: this.state.username_old }),
         headers: {
@@ -85,7 +85,7 @@ export default class ProfileScreen extends React.Component {
   }
 
   addUser() {
-    fetch('https://book-recommender0.herokuapp.com/user/profile',{
+    fetch('http://35.180.69.250:3000/user/profile',{
         method: 'POST',
         body: JSON.stringify(this.state),
         headers: {
@@ -149,6 +149,8 @@ export default class ProfileScreen extends React.Component {
           <KeyboardAvoidingView behavior="height">
             <ScrollView>
               <Card style={{ container: { backgroundColor: 'lightgreen', marginVertical: 10, marginHorizontal: 25 } }}>
+                <Text style={{ textAlign: 'center' }}>Rellene los campos que quiera modificar</Text>
+                
                 <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
                   <Text style={{ color: '#585858'}}>Nombre de usuario</Text>
                   <TextInput style={{ borderBottomColor: '#585858', borderBottomWidth: 1, marginVertical: 4 }} value={this.state.username} onChangeText={(u) => this.setState({ username: u })} />

@@ -23,7 +23,7 @@ export default class ReadedBooksScreen extends React.Component {
     if(username != undefined && username.length > 0) this.setState({ username: username });
     else this.props.navigation.navigate('Home');
 
-    fetch('https://book-recommender0.herokuapp.com/readedbooks',{
+    fetch('http://35.180.69.250:3000/readedbooks',{
       method: 'POST',
       body: JSON.stringify({ username: this.state.username }),
       headers: {

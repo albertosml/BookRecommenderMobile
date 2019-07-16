@@ -17,7 +17,8 @@ export default class RecommendedBooksScreen extends React.Component {
       snack_visible: false,
       message: '',
       option: 1, 
-      dialog: false
+      dialog: false,
+      username: ''
     };
 
     this.removeRecommendedBook = this.removeRecommendedBook.bind(this);
@@ -30,7 +31,7 @@ export default class RecommendedBooksScreen extends React.Component {
     if(username != undefined && username.length > 0) this.setState({ username: username });
     else this.props.navigation.navigate('Home');
 
-    fetch('https://book-recommender0.herokuapp.com/recomendedbooks',{
+    fetch('http://35.180.69.250:3000/recomendedbooks',{
       method: 'POST',
       body: JSON.stringify({ username: this.state.username }),
       headers: {
@@ -46,7 +47,7 @@ export default class RecommendedBooksScreen extends React.Component {
   }
 
   removeRecommendedBook(isbn) {
-    fetch('https://book-recommender0.herokuapp.com/removerecomendedbook',{
+    fetch('http://35.180.69.250:3000/removerecomendedbook',{
         method: 'POST',
         body: JSON.stringify({ isbn: isbn, username: this.state.username }),
         headers: {
@@ -63,7 +64,7 @@ export default class RecommendedBooksScreen extends React.Component {
   }
 
   addPendingBook(isbn) {
-    fetch('https://book-recommender0.herokuapp.com/removerecomendedbook',{
+    fetch('http://35.180.69.250:3000/removerecomendedbook',{
         method: 'POST',
         body: JSON.stringify({ isbn: isbn, username: this.state.username }),
         headers: {
@@ -75,7 +76,7 @@ export default class RecommendedBooksScreen extends React.Component {
         .then(data => {
             this.setState({ libros: data.array });
 
-            fetch('https://book-recommender0.herokuapp.com/newpendingbook',{
+            fetch('http://35.180.69.250:3000/newpendingbook',{
                 method: 'POST',
                 body: JSON.stringify({ isbn: isbn, username: this.state.username }),
                 headers: {
@@ -95,7 +96,7 @@ export default class RecommendedBooksScreen extends React.Component {
   requestRecommendation() {
     this.setState({ message: 'Realizando recomendación, espere un instante', snack_visible: true });
 
-    fetch('https://book-recommender0.herokuapp.com/dorecommendation',{
+    fetch('http://35.180.69.250:3000/dorecommendation',{
         method: 'POST',
         body: JSON.stringify({ option: this.state.option, username: this.state.username }),
         headers: {
@@ -117,10 +118,10 @@ export default class RecommendedBooksScreen extends React.Component {
     
   render() {
     var radio_props = [
-      {label: 'Valoraciones', value: 1 },
-      {label: 'Géneros', value: 2 },
-      {label: 'Opiniones', value: 3 },
-      {label: 'Opiniones de géneros favoritos', value: 4 }
+      {label: 'Basada en valoraciones', value: 1 },
+      {label: 'Basada en géneros favoritos', value: 2 },
+      {label: 'Basada en opiniones', value: 3 },
+      {label: 'Basada en opiniones y géneros favoritos', value: 4 }
     ];
 
     var numPages = this.state.libros.length / this.state.itemsPerPage;
